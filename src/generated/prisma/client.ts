@@ -28,7 +28,7 @@ export * from "./enums.js"
  * ```
  * const prisma = new PrismaClient()
  * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * const users = await prisma.users.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -37,4 +37,38 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-
+/**
+ * Model Users
+ * 
+ */
+export type Users = Prisma.UsersModel
+/**
+ * Model Households
+ * 
+ */
+export type Households = Prisma.HouseholdsModel
+/**
+ * Model Memberships
+ * 
+ */
+export type Memberships = Prisma.MembershipsModel
+/**
+ * Model Expenses
+ * 
+ */
+export type Expenses = Prisma.ExpensesModel
+/**
+ * Model ExpenseSplits
+ * 
+ */
+export type ExpenseSplits = Prisma.ExpenseSplitsModel
+/**
+ * Model Closures
+ * 
+ */
+export type Closures = Prisma.ClosuresModel
+/**
+ * Model ClosureBalance
+ * 
+ */
+export type ClosureBalance = Prisma.ClosureBalanceModel

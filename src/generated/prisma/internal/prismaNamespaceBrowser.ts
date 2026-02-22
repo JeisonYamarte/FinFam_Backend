@@ -51,7 +51,13 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  Users: 'Users',
+  Households: 'Households',
+  Memberships: 'Memberships',
+  Expenses: 'Expenses',
+  ExpenseSplits: 'ExpenseSplits',
+  Closures: 'Closures',
+  ClosureBalance: 'ClosureBalance'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +74,110 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const UsersScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  lastName: 'lastName',
+  birthDate: 'birthDate',
+  email: 'email',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
+
+
+export const HouseholdsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HouseholdsScalarFieldEnum = (typeof HouseholdsScalarFieldEnum)[keyof typeof HouseholdsScalarFieldEnum]
+
+
+export const MembershipsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  householdId: 'householdId',
+  role: 'role',
+  createdAt: 'createdAt'
+} as const
+
+export type MembershipsScalarFieldEnum = (typeof MembershipsScalarFieldEnum)[keyof typeof MembershipsScalarFieldEnum]
+
+
+export const ExpensesScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  amount: 'amount',
+  date: 'date',
+  householdId: 'householdId',
+  paidById: 'paidById',
+  closureId: 'closureId',
+  createdAt: 'createdAt'
+} as const
+
+export type ExpensesScalarFieldEnum = (typeof ExpensesScalarFieldEnum)[keyof typeof ExpensesScalarFieldEnum]
+
+
+export const ExpenseSplitsScalarFieldEnum = {
+  id: 'id',
+  expenseId: 'expenseId',
+  userId: 'userId',
+  amount: 'amount'
+} as const
+
+export type ExpenseSplitsScalarFieldEnum = (typeof ExpenseSplitsScalarFieldEnum)[keyof typeof ExpenseSplitsScalarFieldEnum]
+
+
+export const ClosuresScalarFieldEnum = {
+  id: 'id',
+  householdId: 'householdId',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt'
+} as const
+
+export type ClosuresScalarFieldEnum = (typeof ClosuresScalarFieldEnum)[keyof typeof ClosuresScalarFieldEnum]
+
+
+export const ClosureBalanceScalarFieldEnum = {
+  id: 'id',
+  closureId: 'closureId',
+  fromUserId: 'fromUserId',
+  toUserId: 'toUserId',
+  amount: 'amount'
+} as const
+
+export type ClosureBalanceScalarFieldEnum = (typeof ClosureBalanceScalarFieldEnum)[keyof typeof ClosureBalanceScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
