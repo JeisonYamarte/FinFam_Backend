@@ -9,7 +9,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
-import { Users } from 'src/generated/prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -22,7 +21,7 @@ export class UsersService {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-      const user: Omit<Users, 'password'> = await this.prisma.users.create({
+      const user = await this.prisma.users.create({
         data: {
           ...createUserDto,
           birthDate: new Date(createUserDto.birthDate),
@@ -85,6 +84,19 @@ export class UsersService {
     } catch (error) {
       this.logger.error('Error fetching users', error);
       throw new InternalServerErrorException('Failed to fetch users');
+    }
+  }
+
+  async getUserByEmail(email: string) {
+    try {
+      const user = await this.prisma.users.findUnique({
+        where: { email },
+      });
+
+      return user;
+    } catch (error) {
+      this.logger.error(`Error fetching user by email ${email}`, error);
+      throw new InternalServerErrorException('Failed to fetch user');
     }
   }
 
