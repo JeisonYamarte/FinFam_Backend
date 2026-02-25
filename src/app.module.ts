@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { HouseholdsModule } from './households/households.module';
 import { ExpensesModule } from './expenses/expenses.module';
 import { ClosureModule } from './closure/closure.module';
+import { BcryptModule } from './bcrypt/bcrypt.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ClosureModule } from './closure/closure.module';
     HouseholdsModule,
     ExpensesModule,
     ClosureModule,
+    BcryptModule,
   ],
   controllers: [],
   providers: [],
