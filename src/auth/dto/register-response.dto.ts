@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AuthUserDto } from './auth.dto';
-export class LoginResponseDto {
-  @ApiProperty({ description: 'Authenticated user', type: AuthUserDto })
+
+export class RegisterResponseDto {
+  @ApiProperty({ description: 'Registered user', type: AuthUserDto })
   user: AuthUserDto;
 
   @ApiProperty({
