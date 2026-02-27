@@ -1,10 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { envs } from './env.model';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
+  const logger = new Logger('app - FinFam');
+
   const app = await NestFactory.create(AppModule);
+
+  app.use(cookieParser());
+
+  app.setGlobalPrefix('api');
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
+
+  app.enableCors({
+    origin: envs.ALLOWED_ORIGINS,
+    credentials: true,
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -21,8 +39,9 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(envs.PORT);
+  logger.log(`Application is running on: http://localhost:${envs.PORT}`);
 }
 bootstrap();

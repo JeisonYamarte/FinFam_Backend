@@ -11,17 +11,15 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - 5050:80
+  auth-redis:
+    container_name: auth-redis
+    image: redis:7.2 # Usamos la imagen oficial de Redis
+    restart: always
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
-
+      - redis_data:/data # Persistimos los datos de Redis
+    command: redis-server --appendonly yes # Habilitamos persistencia
+    ports:
+      - "6379:6379"
 
 volumes:
-  pgdata:
-  pgadmin_data:
+  redis_data:
