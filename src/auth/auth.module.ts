@@ -9,6 +9,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { envs } from 'src/env.model';
+import { BcryptService } from 'src/bcrypt/bcrypt.service';
+import { EmailService } from 'src/email/email.service';
 
 @Module({
   imports: [
@@ -21,7 +23,13 @@ import { envs } from 'src/env.model';
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    BcryptService,
+    EmailService,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

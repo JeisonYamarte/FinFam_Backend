@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
-import { createKeyv } from '@keyv/redis';
 
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
@@ -13,15 +12,19 @@ import { BcryptModule } from './bcrypt/bcrypt.module';
 import { EmailModule } from './email/email.module';
 import { TestsModule } from './tests/tests.module';
 import { envs } from './env.model';
+import KeyvRedis from '@keyv/redis';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: () => ({
-        store: [createKeyv(`redis://${envs.REDIS_HOST}:${envs.REDIS_PORT}`)],
-        ttl: envs.REDIS_TTL,
-      }),
+      useFactory: () => {
+        return {
+          stores: [
+            new KeyvRedis(`redis://${envs.REDIS_HOST}:${envs.REDIS_PORT}`),
+          ],
+        };
+      },
     }),
     PrismaModule,
     AuthModule,

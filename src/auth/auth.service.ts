@@ -1,16 +1,24 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+
 import { Payload } from './models/payload';
-import { RegisterDto } from './dto/register.dto';
 import { AuthUserDto } from './dto/auth.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from '@nestjs/cache-manager';
+import { BcryptService } from 'src/bcrypt/bcrypt.service';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private bcryptService: BcryptService,
+    private emailService: EmailService,
   ) {}
 
   async validateUser(email: string, pass: string) {
@@ -20,7 +28,10 @@ export class AuthService {
       throw new UnauthorizedException('Unauthorized');
     }
 
-    const isMatch = await bcrypt.compare(pass, user.password);
+    const isMatch = await this.bcryptService.comparePassword(
+      pass,
+      user.password,
+    );
 
     if (!isMatch) {
       console.warn(
@@ -32,9 +43,21 @@ export class AuthService {
     return user;
   }
 
-  async register(createUserDto: RegisterDto): Promise<AuthUserDto> {
-    const user = await this.usersService.create(createUserDto);
+  async register(createUserDto: CreateUserDto): Promise<AuthUserDto> {
+    const user: AuthUserDto = await this.usersService.create(createUserDto);
+    const uuid = uuidv4();
+    const hashId = await this.bcryptService.hashPassword(uuid);
+    const ttl = 60 * 60 * 24 * 7; // 7 days in seconds
+    await this.cacheManager.set(hashId, user.id, ttl); // Cache for 7 days
+    const test = await this.cacheManager.get(hashId);
+    console.log('Cached UUID:', test);
 
+    const response = await this.emailService.sendVerificationEmail(
+      user.email,
+      uuid,
+    );
+
+    console.log('Verification email response:', response);
     return user;
   }
 

@@ -6,6 +6,8 @@ import {
   MinLength,
   MaxLength,
   IsDateString,
+  IsBoolean,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -60,4 +62,13 @@ export class CreateUserDto {
   @MinLength(8)
   @MaxLength(128)
   password: string;
+
+  @ApiProperty({
+    description: 'email verification status',
+    example: true,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  @IsOptional()
+  emailVerified?: boolean;
 }

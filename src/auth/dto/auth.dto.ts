@@ -42,4 +42,10 @@ export class AuthUserDto {
     example: '2024-02-21T15:30:00.000Z',
   })
   updatedAt: Date;
+
+  @ApiProperty({
+    description: 'email verification status',
+    example: true,
+  })
+  emailVerified?: boolean;
 }
