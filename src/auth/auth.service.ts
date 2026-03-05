@@ -46,19 +46,25 @@ export class AuthService {
   async register(createUserDto: CreateUserDto): Promise<AuthUserDto> {
     const user: AuthUserDto = await this.usersService.create(createUserDto);
     const uuid = uuidv4();
-    const hashId = await this.bcryptService.hashPassword(uuid);
     const ttl = 60 * 60 * 24 * 7; // 7 days in seconds
-    await this.cacheManager.set(hashId, user.id, ttl); // Cache for 7 days
-    const test = await this.cacheManager.get(hashId);
-    console.log('Cached UUID:', test);
+    await this.cacheManager.set(uuid, user.id, ttl); // Cache for 7 days
 
-    const response = await this.emailService.sendVerificationEmail(
-      user.email,
-      uuid,
-    );
-
-    console.log('Verification email response:', response);
+    await this.emailService.sendVerificationEmail(user.email, uuid);
     return user;
+  }
+
+  async verifyEmail(token: string): Promise<void> {
+    const keys = await this.cacheManager.get<string>(token);
+    console.log(' token: ', keys);
+    if (!keys) {
+      console.warn(
+        `Email verification failed: Invalid or expired token ${token}`,
+      );
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+    console.log('userId: ', keys);
+    await this.usersService.verifyEmail(keys);
+    await this.cacheManager.del(token); // Remove token after successful verification
   }
 
   generateJwt(userId: string) {

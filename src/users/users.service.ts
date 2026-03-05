@@ -49,6 +49,18 @@ export class UsersService {
     }
   }
 
+  async verifyEmail(userId: string): Promise<void> {
+    try {
+      await this.prisma.users.update({
+        where: { id: userId },
+        data: { verifiedEmail: true },
+      });
+    } catch (error) {
+      this.logger.error(`Error verifying email for user ${userId}`, error);
+      throw new InternalServerErrorException('Failed to verify email');
+    }
+  }
+
   async findAll(queryUserDto: QueryUserDto) {
     try {
       const { name, lastName, email, page = 1, limit = 10 } = queryUserDto;

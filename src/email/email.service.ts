@@ -1,32 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { Resend } from 'resend';
+import nodemailer, { Transporter, SentMessageInfo } from 'nodemailer';
 import { envs } from 'src/env.model';
 
 @Injectable()
 export class EmailService {
-  private resend: Resend;
+  private transporter: Transporter;
 
   constructor() {
-    this.resend = new Resend(envs.RESEND_API_KEY);
+    this.transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: envs.EMAIL_FROM,
+        pass: envs.EMAIL_PASSWORD,
+      },
+    });
   }
 
   async sendEmail(to: string, subject: string, html: string) {
     const from = envs.EMAIL_FROM;
     try {
-      const { data, error } = await this.resend.emails.send({
-        from,
+      const info: SentMessageInfo = await this.transporter.sendMail({
+        from: `"FinFam" <${from}>`,
         to,
         subject,
         html,
       });
-      console.log('Email sent successfully:', data);
 
-      if (error) {
-        console.error('Error sending email:', error);
-        throw new Error('Failed to send email');
-      }
-
-      return data;
+      return info;
     } catch (error) {
       console.error('Error sending email:', error);
       throw new Error('Failed to send email');
@@ -37,8 +37,14 @@ export class EmailService {
     const subject = 'Verify Your Email Address';
     const html = `
       <p>Thank you for registering! Please verify your email address by clicking the link below:</p>
-      <a href="http://localhost:3000/api/auth/verify-email?token=${uuid}">Verify Email</a>
+      <a href="http://localhost:3000/api/v1/auth/verify-email?token=${uuid}">Verify Email</a>
     `;
-    return this.sendEmail(to, subject, html);
+
+    try {
+      await this.sendEmail(to, subject, html);
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      throw new Error('Failed to send verification email');
+    }
   }
 }

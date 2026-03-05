@@ -1,7 +1,15 @@
-import { Controller, Post, Req, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Req,
+  UseGuards,
+  Body,
+  Query,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { Users } from 'src/generated/prisma/client';
@@ -9,11 +17,12 @@ import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { RegisterDto } from './dto/register.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
+import { QueryAuthDto } from './dto/query-auth.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(AuthGuard('local'))
   @ApiBody({ type: LoginDto })
@@ -38,5 +47,15 @@ export class AuthController {
       user,
       access_token: this.authService.generateJwt(user.id),
     };
+  }
+
+  @Get('verify-email')
+  @ApiOperation({ summary: 'Verify user email with token' })
+  async verifyEmail(
+    @Query() query: QueryAuthDto,
+  ): Promise<{ message: string }> {
+    const { token } = query;
+    await this.authService.verifyEmail(token);
+    return { message: 'Email verified successfully' };
   }
 }
