@@ -28,6 +28,21 @@ model Users {
   memberships Memberships[]
   expensesPaid Expenses[]      @relation("PaidBy")
   splits       ExpenseSplits[]
+  sessions     Sessions[]
+}
+
+model Sessions {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  ip           String?
+  userAgent    String?
+
+  user         Users    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Households {

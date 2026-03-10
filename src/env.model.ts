@@ -15,6 +15,7 @@ export const envSchema = z
     REDIS_TTL: z.string().min(1, 'REDIS_TTL is required.').transform(Number),
     EMAIL_PASSWORD: z.string().min(1, 'EMAIL_PASSWORD is required.'),
     EMAIL_FROM: z.string().min(1, 'EMAIL_FROM is required.'),
+    NODE_ENV: z.enum(['development', 'production']).default('development'),
   })
   .passthrough();
 
@@ -37,4 +38,5 @@ export const envs: envType = {
   REDIS_TTL: envParsed.data.REDIS_TTL,
   EMAIL_PASSWORD: envParsed.data.EMAIL_PASSWORD,
   EMAIL_FROM: envParsed.data.EMAIL_FROM,
+  NODE_ENV: envParsed.data.NODE_ENV,
 };
