@@ -16,6 +16,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 import { Users } from 'src/generated/prisma/client';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
@@ -29,7 +30,10 @@ import { envs } from '../env.model';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @UseGuards(AuthGuard('local'))
   @ApiBody({ type: LoginDto })
@@ -159,6 +163,14 @@ export class AuthController {
       message:
         'If that email is registered, you will receive a password reset link shortly.',
     };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  @ApiOperation({ summary: 'Get current authenticated user data' })
+  async getMe(@Req() req: Request) {
+    const { userId } = req.user as { userId: string };
+    return this.usersService.findOne(userId);
   }
 
   @Post('reset-password')

@@ -9,12 +9,14 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { envs } from 'src/env.model';
-import { BcryptService } from 'src/bcrypt/bcrypt.service';
-import { EmailService } from 'src/email/email.service';
+import { BcryptModule } from 'src/bcrypt/bcrypt.module';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
     UsersModule,
+    BcryptModule,
+    EmailModule,
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => ({
@@ -23,13 +25,7 @@ import { EmailService } from 'src/email/email.service';
       }),
     }),
   ],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    BcryptService,
-    EmailService,
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
