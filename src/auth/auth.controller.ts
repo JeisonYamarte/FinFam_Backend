@@ -8,6 +8,8 @@ import {
   Body,
   Query,
   UnauthorizedException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,6 +22,8 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { RegisterDto } from './dto/register.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
 import { QueryAuthDto } from './dto/query-auth.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { envs } from '../env.model';
 
 @ApiTags('auth')
@@ -112,6 +116,25 @@ export class AuthController {
     return { access_token };
   }
 
+  @Post('logout')
+  @ApiOperation({ summary: 'Logout and invalidate refresh token' })
+  @ApiOkResponse({ schema: { properties: { message: { type: 'string' } } } })
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ message: string }> {
+    const refreshToken = req.cookies?.refresh_token as string;
+    if (refreshToken) {
+      await this.authService.logout(refreshToken);
+    }
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: envs.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    return { message: 'Logged out successfully' };
+  }
+
   @Get('verify-email')
   @ApiOperation({ summary: 'Verify user email with token' })
   async verifyEmail(
@@ -120,5 +143,33 @@ export class AuthController {
     const { token } = query;
     await this.authService.verifyEmail(token);
     return { message: 'Email verified successfully' };
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request a password reset email' })
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({ schema: { properties: { message: { type: 'string' } } } })
+  async forgotPassword(
+    @Body() dto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
+    await this.authService.forgotPassword(dto.email);
+    // Always return the same message to avoid email enumeration
+    return {
+      message:
+        'If that email is registered, you will receive a password reset link shortly.',
+    };
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password using the token from the email' })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiOkResponse({ schema: { properties: { message: { type: 'string' } } } })
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    await this.authService.resetPassword(dto.token, dto.newPassword);
+    return { message: 'Password reset successfully' };
   }
 }

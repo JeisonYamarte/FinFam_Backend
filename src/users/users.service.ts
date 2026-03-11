@@ -173,6 +173,19 @@ export class UsersService {
     }
   }
 
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    try {
+      const hashedPassword = await this.bcryptService.hashPassword(newPassword);
+      await this.prisma.users.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+    } catch (error) {
+      this.logger.error(`Error updating password for user ${userId}`, error);
+      throw new InternalServerErrorException('Failed to update password');
+    }
+  }
+
   async remove(id: string) {
     try {
       await this.findOne(id);

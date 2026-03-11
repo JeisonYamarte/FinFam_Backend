@@ -47,4 +47,21 @@ export class EmailService {
       throw new Error('Failed to send verification email');
     }
   }
+
+  async sendPasswordResetEmail(to: string, uuid: string) {
+    const subject = 'Reset Your Password';
+    const html = `
+      <p>You requested a password reset. Click the link below to reset your password:</p>
+      <a href="${envs.FRONTEND_URL}/reset-password?token=${uuid}">Reset Password</a>
+      <p>This link will expire in 15 minutes.</p>
+      <p>If you did not request this, please ignore this email.</p>
+    `;
+
+    try {
+      await this.sendEmail(to, subject, html);
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      throw new Error('Failed to send password reset email');
+    }
+  }
 }

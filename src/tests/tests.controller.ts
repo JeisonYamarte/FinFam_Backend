@@ -1,19 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { EmailService } from 'src/email/email.service';
 
 @Controller('tests')
 export class TestsController {
   constructor(private readonly emailService: EmailService) {}
+
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  async test() {
-    const responnse = await this.emailService.sendEmail(
-      'jeisonyamartedev@gmail.com',
-      'Test Subject',
-      '<p>Test Email</p>',
-    );
+  test() {
     return {
-      message: 'Email sent successfully',
-      data: responnse,
+      message: 'Test endpoint is working',
     };
   }
 }

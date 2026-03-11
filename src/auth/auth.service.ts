@@ -65,7 +65,7 @@ export class AuthService {
   ): Promise<{ user: AuthUserDto; refresh_token: string }> {
     const user: AuthUserDto = await this.usersService.create(createUserDto);
     const uuid = uuidv4();
-    const ttl = 60 * 60 * 24 * 7; // 7 days in seconds
+    const ttl = 60 * 60 * 24 * 7 * 1000; // 7 días en milisegundos
     await this.cacheManager.set(uuid, user.id, ttl); // Cache for 7 days
 
     await this.emailService.sendVerificationEmail(user.email, uuid);
@@ -114,6 +114,34 @@ export class AuthService {
       access_token: this.generateJwt(session.userId),
       refresh_token: newRefreshToken,
     };
+  }
+
+  async logout(refreshToken: string): Promise<void> {
+    await this.prismaService.sessions.deleteMany({
+      where: { refreshToken },
+    });
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.usersService.getUserByEmail(email);
+    // Silent fail to avoid leaking whether an email is registered
+    if (!user) return;
+    console.log('User found for password reset: ', user.email);
+    const uuid = uuidv4();
+    const ttl = 60 * 15 * 1000; // 15 minutos en milisegundos
+    await this.cacheManager.set(`reset:${uuid}`, user.id, ttl);
+    await this.emailService.sendPasswordResetEmail(user.email, uuid);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const userId = await this.cacheManager.get<string>(`reset:${token}`);
+    if (!userId) {
+      throw new UnauthorizedException(
+        'Invalid or expired password reset token',
+      );
+    }
+    await this.usersService.updatePassword(userId, newPassword);
+    await this.cacheManager.del(`reset:${token}`);
   }
 
   generateJwt(userId: string) {

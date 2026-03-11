@@ -19,7 +19,7 @@ import { EmailService } from 'src/email/email.service';
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: envs.JWT_SECRET,
-        signOptions: { expiresIn: '6d' },
+        signOptions: { expiresIn: '15m' },
       }),
     }),
   ],
