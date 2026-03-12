@@ -4,16 +4,14 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
-import { PrismaModule } from './prisma/prisma.module';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { HouseholdsModule } from './households/households.module';
-import { ExpensesModule } from './expenses/expenses.module';
-import { ClosureModule } from './closure/closure.module';
-import { BcryptModule } from './bcrypt/bcrypt.module';
-import { EmailModule } from './email/email.module';
-import { TestsModule } from './tests/tests.module';
-import { envs } from './env.model';
+import { PrismaModule } from './modules/prisma/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { HouseholdsModule } from './modules/households/households.module';
+import { ExpensesModule } from './modules/expenses/expenses.module';
+import { ClosureModule } from './modules/closure/closure.module';
+import { TestsModule } from './modules/tests/tests.module';
+import { envs } from './config/app.config';
 import KeyvRedis from '@keyv/redis';
 @Module({
   imports: [
@@ -46,8 +44,6 @@ import KeyvRedis from '@keyv/redis';
     HouseholdsModule,
     ExpensesModule,
     ClosureModule,
-    BcryptModule,
-    EmailModule,
     TestsModule,
   ],
   controllers: [],

@@ -1,16 +1,16 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/modules/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Payload } from './models/payload';
 import { AuthUserDto } from './dto/auth.dto';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from '@nestjs/cache-manager';
-import { BcryptService } from 'src/bcrypt/bcrypt.service';
-import { EmailService } from 'src/email/email.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { BcryptService } from 'src/modules/bcrypt/bcrypt.service';
+import { EmailService } from 'src/modules/email/email.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +26,6 @@ export class AuthService {
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.getUserByEmail(email);
     if (!user) {
-      console.warn(`Authentication failed: No user found with email ${email}`);
       throw new UnauthorizedException('Unauthorized');
     }
 
@@ -36,9 +35,6 @@ export class AuthService {
     );
 
     if (!isMatch) {
-      console.warn(
-        `Authentication failed: Incorrect password for email ${email}`,
-      );
       throw new UnauthorizedException('Unauthorized');
     }
 
@@ -75,14 +71,9 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<void> {
     const keys = await this.cacheManager.get<string>(token);
-    console.log(' token: ', keys);
     if (!keys) {
-      console.warn(
-        `Email verification failed: Invalid or expired token ${token}`,
-      );
       throw new UnauthorizedException('Invalid or expired token');
     }
-    console.log('userId: ', keys);
     await this.usersService.verifyEmail(keys);
     await this.cacheManager.del(token); // Remove token after successful verification
   }
@@ -126,7 +117,6 @@ export class AuthService {
     const user = await this.usersService.getUserByEmail(email);
     // Silent fail to avoid leaking whether an email is registered
     if (!user) return;
-    console.log('User found for password reset: ', user.email);
     const uuid = uuidv4();
     const ttl = 60 * 15 * 1000; // 15 minutos en milisegundos
     await this.cacheManager.set(`reset:${uuid}`, user.id, ttl);
@@ -142,6 +132,10 @@ export class AuthService {
     }
     await this.usersService.updatePassword(userId, newPassword);
     await this.cacheManager.del(`reset:${token}`);
+  }
+
+  async getMe(userId: string): Promise<AuthUserDto> {
+    return this.usersService.findOne(userId);
   }
 
   generateJwt(userId: string) {

@@ -16,7 +16,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
 import { Users } from 'src/generated/prisma/client';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
@@ -25,15 +24,12 @@ import { RegisterResponseDto } from './dto/register-response.dto';
 import { QueryAuthDto } from './dto/query-auth.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { envs } from '../env.model';
+import { envs } from 'src/config/app.config';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(AuthGuard('local'))
   @ApiBody({ type: LoginDto })
@@ -170,7 +166,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Get current authenticated user data' })
   async getMe(@Req() req: Request) {
     const { userId } = req.user as { userId: string };
-    return this.usersService.findOne(userId);
+    return this.authService.getMe(userId);
   }
 
   @Post('reset-password')

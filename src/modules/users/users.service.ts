@@ -5,11 +5,11 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
-import { BcryptService } from 'src/bcrypt/bcrypt.service';
+import { BcryptService } from 'src/modules/bcrypt/bcrypt.service';
 
 @Injectable()
 export class UsersService {

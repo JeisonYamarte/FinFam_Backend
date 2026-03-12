@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
-import { BcryptModule } from 'src/bcrypt/bcrypt.module';
+import { PrismaModule } from 'src/modules/prisma/prisma.module';
+import { BcryptModule } from 'src/modules/bcrypt/bcrypt.module';
 
 @Module({
   imports: [PrismaModule, BcryptModule],

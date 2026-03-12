@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from 'src/modules/email/email.service';
 
 @Controller('tests')
 export class TestsController {

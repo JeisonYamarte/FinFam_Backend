@@ -7,10 +7,10 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { AuthController } from './auth.controller';
-import { UsersModule } from 'src/users/users.module';
-import { envs } from 'src/env.model';
-import { BcryptModule } from 'src/bcrypt/bcrypt.module';
-import { EmailModule } from 'src/email/email.module';
+import { UsersModule } from 'src/modules/users/users.module';
+import { envs } from 'src/config/app.config';
+import { BcryptModule } from 'src/modules/bcrypt/bcrypt.module';
+import { EmailModule } from 'src/modules/email/email.module';
 
 @Module({
   imports: [

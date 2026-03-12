@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import nodemailer, { Transporter, SentMessageInfo } from 'nodemailer';
-import { envs } from 'src/env.model';
+import { envs } from 'src/config/app.config';
 
 @Injectable()
 export class EmailService {
@@ -37,7 +37,7 @@ export class EmailService {
     const subject = 'Verify Your Email Address';
     const html = `
       <p>Thank you for registering! Please verify your email address by clicking the link below:</p>
-      <a href="http://localhost:3000/api/v1/auth/verify-email?token=${uuid}">Verify Email</a>
+      <a href="${envs.FRONTEND_URL}/verify-email?token=${uuid}">Verify Email</a>
     `;
 
     try {
