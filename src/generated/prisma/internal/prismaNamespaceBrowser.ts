@@ -120,6 +120,7 @@ export const MembershipsScalarFieldEnum = {
   userId: 'userId',
   householdId: 'householdId',
   role: 'role',
+  isActive: 'isActive',
   createdAt: 'createdAt'
 } as const
 

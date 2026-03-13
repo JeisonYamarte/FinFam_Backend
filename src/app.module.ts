@@ -12,6 +12,9 @@ import { ExpensesModule } from './modules/expenses/expenses.module';
 import { ClosureModule } from './modules/closure/closure.module';
 import { TestsModule } from './modules/tests/tests.module';
 import { envs } from './config/app.config';
+import { HomeModule } from './modules/home/home.module';
+import { MemberModule } from './modules/member/member.module';
+import { InvitationModule } from './modules/invitation/invitation.module';
 import KeyvRedis from '@keyv/redis';
 @Module({
   imports: [
@@ -45,6 +48,9 @@ import KeyvRedis from '@keyv/redis';
     ExpensesModule,
     ClosureModule,
     TestsModule,
+    HomeModule,
+    MemberModule,
+    InvitationModule,
   ],
   controllers: [],
   providers: [
