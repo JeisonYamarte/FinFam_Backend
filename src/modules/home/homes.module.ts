@@ -6,4 +6,4 @@ import { HomesService } from './homes.service';
   controllers: [HomesController],
   providers: [HomesService],
 })
-export class HomeModule {}
+export class HomesModule {}

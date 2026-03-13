@@ -7,12 +7,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { HouseholdsModule } from './modules/households/households.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { ClosureModule } from './modules/closure/closure.module';
 import { TestsModule } from './modules/tests/tests.module';
 import { envs } from './config/app.config';
-import { HomeModule } from './modules/home/home.module';
+import { HomesModule } from './modules/home/homes.module';
 import { MemberModule } from './modules/member/member.module';
 import { InvitationModule } from './modules/invitation/invitation.module';
 import KeyvRedis from '@keyv/redis';
@@ -44,11 +43,10 @@ import KeyvRedis from '@keyv/redis';
     PrismaModule,
     AuthModule,
     UsersModule,
-    HouseholdsModule,
     ExpensesModule,
     ClosureModule,
     TestsModule,
-    HomeModule,
+    HomesModule,
     MemberModule,
     InvitationModule,
   ],
