@@ -64,4 +64,23 @@ export class EmailService {
       throw new Error('Failed to send password reset email');
     }
   }
+
+  async sendInvitationEmail(to: string, invitationId: string) {
+    const subject = 'You have been invited to a FinFam household';
+    const html = `
+      <p>You have been invited to join a household on FinFam.</p>
+      <p>Click the link below to accept or decline the invitation:</p>
+      <a href="${envs.FRONTEND_URL}/invitations/${invitationId}/accept">Accept Invitation</a>
+      <br/>
+      <a href="${envs.FRONTEND_URL}/invitations/${invitationId}/decline">Decline Invitation</a>
+      <p>This invitation will expire in 24 hours.</p>
+    `;
+
+    try {
+      await this.sendEmail(to, subject, html);
+    } catch (error) {
+      console.error('Error sending invitation email:', error);
+      throw new Error('Failed to send invitation email');
+    }
+  }
 }
