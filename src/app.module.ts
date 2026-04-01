@@ -14,6 +14,7 @@ import { envs } from './config/app.config';
 import { HomesModule } from './modules/home/homes.module';
 import { MemberModule } from './modules/member/member.module';
 import { InvitationModule } from './modules/invitation/invitation.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import KeyvRedis from '@keyv/redis';
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import KeyvRedis from '@keyv/redis';
     HomesModule,
     MemberModule,
     InvitationModule,
+    CloudinaryModule,
   ],
   controllers: [],
   providers: [

@@ -48,6 +48,11 @@ export type Expenses = Prisma.ExpensesModel
  */
 export type ExpenseSplits = Prisma.ExpenseSplitsModel
 /**
+ * Model ExpensePayers
+ * 
+ */
+export type ExpensePayers = Prisma.ExpensePayersModel
+/**
  * Model Closures
  * 
  */

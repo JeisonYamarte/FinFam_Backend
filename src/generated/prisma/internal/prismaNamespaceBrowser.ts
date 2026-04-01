@@ -57,6 +57,7 @@ export const ModelName = {
   Memberships: 'Memberships',
   Expenses: 'Expenses',
   ExpenseSplits: 'ExpenseSplits',
+  ExpensePayers: 'ExpensePayers',
   Closures: 'Closures',
   ClosureBalance: 'ClosureBalance'
 } as const
@@ -134,7 +135,6 @@ export const ExpensesScalarFieldEnum = {
   amount: 'amount',
   date: 'date',
   householdId: 'householdId',
-  paidById: 'paidById',
   closureId: 'closureId',
   createdAt: 'createdAt'
 } as const
@@ -150,6 +150,16 @@ export const ExpenseSplitsScalarFieldEnum = {
 } as const
 
 export type ExpenseSplitsScalarFieldEnum = (typeof ExpenseSplitsScalarFieldEnum)[keyof typeof ExpenseSplitsScalarFieldEnum]
+
+
+export const ExpensePayersScalarFieldEnum = {
+  id: 'id',
+  expenseId: 'expenseId',
+  userId: 'userId',
+  amountPaid: 'amountPaid'
+} as const
+
+export type ExpensePayersScalarFieldEnum = (typeof ExpensePayersScalarFieldEnum)[keyof typeof ExpensePayersScalarFieldEnum]
 
 
 export const ClosuresScalarFieldEnum = {

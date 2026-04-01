@@ -25,10 +25,11 @@ model Users {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  memberships Memberships[]
-  expensesPaid Expenses[]      @relation("PaidBy")
-  splits       ExpenseSplits[]
-  sessions     Sessions[]
+  memberships      Memberships[]
+  expensesPaid     ExpensePayers[]
+  splits           ExpenseSplits[]
+  sessions         Sessions[]
+  expensesCreated  Expenses[]     @relation("ExpenseCreator")
 }
 
 model Sessions {
@@ -67,6 +68,7 @@ model Memberships {
   household   Households @relation(fields: [householdId], references: [id])
 
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([userId, householdId])
 }
@@ -82,18 +84,22 @@ model Expenses {
   description  String?
   amount       Decimal  @db.Decimal(12,2)
   date         DateTime
+  receiptUrl   String?
+  receiptPublicId String?  
 
   householdId  String
-  paidById     String
   closureId    String?
+  createdBy    String
 
   household    Households @relation(fields: [householdId], references: [id])
-  paidBy       Users      @relation("PaidBy", fields: [paidById], references: [id])
   closure      Closures?  @relation(fields: [closureId], references: [id])
+  creator      Users      @relation("ExpenseCreator", fields: [createdBy], references: [id])
 
+  payers       ExpensePayers[]
   splits       ExpenseSplits[]
 
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([householdId])
   @@index([closureId])
@@ -108,7 +114,24 @@ model ExpenseSplits {
   expense   Expenses @relation(fields: [expenseId], references: [id])
   user      Users    @relation(fields: [userId], references: [id])
 
+  updatedAt DateTime @updatedAt
+
   @@unique([expenseId, userId])
+}
+
+model ExpensePayers {
+  id          String   @id @default(uuid())
+  expenseId   String
+  userId      String
+  amountPaid  Decimal  @db.Decimal(12,2)
+
+  expense     Expenses @relation(fields: [expenseId], references: [id])
+  user        Users    @relation(fields: [userId], references: [id])
+
+  updatedAt   DateTime @updatedAt
+
+  @@unique([expenseId, userId])
+  @@index([expenseId])
 }
 
 model Closures {
@@ -119,6 +142,7 @@ model Closures {
   endDate      DateTime
 
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   household    Households @relation(fields: [householdId], references: [id])
   expenses     Expenses[]
@@ -135,6 +159,8 @@ model ClosureBalance {
   amount      Decimal  @db.Decimal(12,2)
 
   closure     Closures @relation(fields: [closureId], references: [id])
+
+  updatedAt   DateTime @updatedAt
 
   @@index([closureId])
 }

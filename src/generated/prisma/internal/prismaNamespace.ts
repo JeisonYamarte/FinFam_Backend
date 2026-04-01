@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.5.0
- * Query Engine version: 280c870be64f457428992c43c1f6d557fab6e29e
+ * Prisma Client JS version: 7.4.1
+ * Query Engine version: 55ae170b1ced7fc6ed07a15f110549408c501bb3
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.5.0",
-  engine: "280c870be64f457428992c43c1f6d557fab6e29e"
+  client: "7.4.1",
+  engine: "55ae170b1ced7fc6ed07a15f110549408c501bb3"
 }
 
 /**
@@ -390,6 +390,7 @@ export const ModelName = {
   Memberships: 'Memberships',
   Expenses: 'Expenses',
   ExpenseSplits: 'ExpenseSplits',
+  ExpensePayers: 'ExpensePayers',
   Closures: 'Closures',
   ClosureBalance: 'ClosureBalance'
 } as const
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "users" | "sessions" | "households" | "memberships" | "expenses" | "expenseSplits" | "closures" | "closureBalance"
+    modelProps: "users" | "sessions" | "households" | "memberships" | "expenses" | "expenseSplits" | "expensePayers" | "closures" | "closureBalance"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -855,6 +856,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ExpensePayers: {
+      payload: Prisma.$ExpensePayersPayload<ExtArgs>
+      fields: Prisma.ExpensePayersFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExpensePayersFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExpensePayersFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>
+        }
+        findFirst: {
+          args: Prisma.ExpensePayersFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExpensePayersFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>
+        }
+        findMany: {
+          args: Prisma.ExpensePayersFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>[]
+        }
+        create: {
+          args: Prisma.ExpensePayersCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>
+        }
+        createMany: {
+          args: Prisma.ExpensePayersCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExpensePayersCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>[]
+        }
+        delete: {
+          args: Prisma.ExpensePayersDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>
+        }
+        update: {
+          args: Prisma.ExpensePayersUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExpensePayersDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExpensePayersUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExpensePayersUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExpensePayersUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExpensePayersPayload>
+        }
+        aggregate: {
+          args: Prisma.ExpensePayersAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExpensePayers>
+        }
+        groupBy: {
+          args: Prisma.ExpensePayersGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExpensePayersGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExpensePayersCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExpensePayersCountAggregateOutputType> | number
+        }
+      }
+    }
     Closures: {
       payload: Prisma.$ClosuresPayload<ExtArgs>
       fields: Prisma.ClosuresFieldRefs
@@ -1099,7 +1174,6 @@ export const ExpensesScalarFieldEnum = {
   amount: 'amount',
   date: 'date',
   householdId: 'householdId',
-  paidById: 'paidById',
   closureId: 'closureId',
   createdAt: 'createdAt'
 } as const
@@ -1115,6 +1189,16 @@ export const ExpenseSplitsScalarFieldEnum = {
 } as const
 
 export type ExpenseSplitsScalarFieldEnum = (typeof ExpenseSplitsScalarFieldEnum)[keyof typeof ExpenseSplitsScalarFieldEnum]
+
+
+export const ExpensePayersScalarFieldEnum = {
+  id: 'id',
+  expenseId: 'expenseId',
+  userId: 'userId',
+  amountPaid: 'amountPaid'
+} as const
+
+export type ExpensePayersScalarFieldEnum = (typeof ExpensePayersScalarFieldEnum)[keyof typeof ExpensePayersScalarFieldEnum]
 
 
 export const ClosuresScalarFieldEnum = {
@@ -1346,6 +1430,7 @@ export type GlobalOmitConfig = {
   memberships?: Prisma.MembershipsOmit
   expenses?: Prisma.ExpensesOmit
   expenseSplits?: Prisma.ExpenseSplitsOmit
+  expensePayers?: Prisma.ExpensePayersOmit
   closures?: Prisma.ClosuresOmit
   closureBalance?: Prisma.ClosureBalanceOmit
 }

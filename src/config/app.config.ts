@@ -17,6 +17,15 @@ export const envSchema = z
     EMAIL_FROM: z.string().min(1, 'EMAIL_FROM is required.'),
     FRONTEND_URL: z.string().min(1, 'FRONTEND_URL is required.'),
     NODE_ENV: z.enum(['development', 'production']).default('development'),
+
+    // Cloudinary — Settings > API Keys en tu dashboard de Cloudinary
+    CLOUDINARY_CLOUD_NAME: z
+      .string()
+      .min(1, 'CLOUDINARY_CLOUD_NAME is required.'),
+    CLOUDINARY_API_KEY: z.string().min(1, 'CLOUDINARY_API_KEY is required.'),
+    CLOUDINARY_API_SECRET: z
+      .string()
+      .min(1, 'CLOUDINARY_API_SECRET is required.'),
   })
   .passthrough();
 
@@ -41,4 +50,7 @@ export const envs: envType = {
   EMAIL_FROM: envParsed.data.EMAIL_FROM,
   FRONTEND_URL: envParsed.data.FRONTEND_URL,
   NODE_ENV: envParsed.data.NODE_ENV,
+  CLOUDINARY_CLOUD_NAME: envParsed.data.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: envParsed.data.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: envParsed.data.CLOUDINARY_API_SECRET,
 };

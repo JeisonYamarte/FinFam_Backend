@@ -18,13 +18,20 @@ export class MemberService {
     });
   }
 
-  async createMembership(userId: string, householdId: string, role: Role = Role.GUEST) {
+  async createMembership(
+    userId: string,
+    householdId: string,
+    role: Role = Role.GUEST,
+  ) {
     return this.prisma.memberships.create({
       data: { userId, householdId, role },
     });
   }
 
-  async isExistingMemberByEmail(email: string, householdId: string): Promise<boolean> {
+  async isExistingMemberByEmail(
+    email: string,
+    householdId: string,
+  ): Promise<boolean> {
     const user = await this.prisma.users.findUnique({ where: { email } });
     if (!user) return false;
     const membership = await this.prisma.memberships.findFirst({
@@ -33,4 +40,3 @@ export class MemberService {
     return !!membership;
   }
 }
-
