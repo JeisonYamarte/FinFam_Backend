@@ -1161,7 +1161,8 @@ export const MembershipsScalarFieldEnum = {
   householdId: 'householdId',
   role: 'role',
   isActive: 'isActive',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type MembershipsScalarFieldEnum = (typeof MembershipsScalarFieldEnum)[keyof typeof MembershipsScalarFieldEnum]
@@ -1173,9 +1174,13 @@ export const ExpensesScalarFieldEnum = {
   description: 'description',
   amount: 'amount',
   date: 'date',
+  receiptUrl: 'receiptUrl',
+  receiptPublicId: 'receiptPublicId',
   householdId: 'householdId',
   closureId: 'closureId',
-  createdAt: 'createdAt'
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type ExpensesScalarFieldEnum = (typeof ExpensesScalarFieldEnum)[keyof typeof ExpensesScalarFieldEnum]
@@ -1185,7 +1190,8 @@ export const ExpenseSplitsScalarFieldEnum = {
   id: 'id',
   expenseId: 'expenseId',
   userId: 'userId',
-  amount: 'amount'
+  amount: 'amount',
+  updatedAt: 'updatedAt'
 } as const
 
 export type ExpenseSplitsScalarFieldEnum = (typeof ExpenseSplitsScalarFieldEnum)[keyof typeof ExpenseSplitsScalarFieldEnum]
@@ -1195,7 +1201,8 @@ export const ExpensePayersScalarFieldEnum = {
   id: 'id',
   expenseId: 'expenseId',
   userId: 'userId',
-  amountPaid: 'amountPaid'
+  amountPaid: 'amountPaid',
+  updatedAt: 'updatedAt'
 } as const
 
 export type ExpensePayersScalarFieldEnum = (typeof ExpensePayersScalarFieldEnum)[keyof typeof ExpensePayersScalarFieldEnum]
@@ -1206,7 +1213,8 @@ export const ClosuresScalarFieldEnum = {
   householdId: 'householdId',
   startDate: 'startDate',
   endDate: 'endDate',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type ClosuresScalarFieldEnum = (typeof ClosuresScalarFieldEnum)[keyof typeof ClosuresScalarFieldEnum]
@@ -1217,7 +1225,8 @@ export const ClosureBalanceScalarFieldEnum = {
   closureId: 'closureId',
   fromUserId: 'fromUserId',
   toUserId: 'toUserId',
-  amount: 'amount'
+  amount: 'amount',
+  updatedAt: 'updatedAt'
 } as const
 
 export type ClosureBalanceScalarFieldEnum = (typeof ClosureBalanceScalarFieldEnum)[keyof typeof ClosureBalanceScalarFieldEnum]

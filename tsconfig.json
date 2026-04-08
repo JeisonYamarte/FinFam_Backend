@@ -18,6 +18,7 @@
     "skipLibCheck": true,
     "types": [],
     "strictNullChecks": true,
+    "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,

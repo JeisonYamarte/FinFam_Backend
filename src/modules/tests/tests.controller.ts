@@ -1,5 +1,6 @@
 /// <reference types="multer" />
 import {
+  Body,
   Controller,
   Get,
   Post,
@@ -29,11 +30,14 @@ export class TestsController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('name') name: string,
+  ) {
     const result = await this.cloudinaryService.uploadFile(
       file.buffer,
       'tests',
     );
-    return result;
+    return { ...result, name };
   }
 }
