@@ -403,6 +403,7 @@ export class ExpensesService {
       this.roundCents(payersSum) !== this.roundCents(Number(expense.amount))
     ) {
       throw new BadRequestException(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `Payers sum (${payersSum}) does not match expense amount (${expense.amount})`,
       );
     }
@@ -446,6 +447,7 @@ export class ExpensesService {
       this.roundCents(splitsSum) !== this.roundCents(Number(expense.amount))
     ) {
       throw new BadRequestException(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `Splits sum (${splitsSum}) does not match expense amount (${expense.amount})`,
       );
     }
