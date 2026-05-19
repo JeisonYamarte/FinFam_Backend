@@ -3,14 +3,19 @@ import { BalanceEngineService } from 'src/modules/balance-engine/balance-engine.
 import type {
   Debt,
   ExpenseInput,
+  SettlementResult,
 } from 'src/modules/balance-engine/balance-engine.interfaces';
 
 @Injectable()
 export class ClosureBalancesService {
   constructor(private readonly balanceEngine: BalanceEngineService) {}
 
+  calculateSettlement(expenses: ExpenseInput[]): SettlementResult {
+    return this.balanceEngine.calculateSettlement(expenses);
+  }
+
   calculate(expenses: ExpenseInput[]): Debt[] {
-    return this.balanceEngine.calculateSettlement(expenses).debts;
+    return this.calculateSettlement(expenses).debts;
   }
 
   toCreateManyData(closureId: string, debts: Debt[]) {

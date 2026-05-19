@@ -30,14 +30,11 @@ export class TestsController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-    @Body('name') name: string,
-  ) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const result = await this.cloudinaryService.uploadFile(
       file.buffer,
       'tests',
     );
-    return { ...result, name };
+    return result;
   }
 }

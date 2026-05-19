@@ -20,6 +20,14 @@ import { ListClosuresQueryDto } from './dto/list-closures-query.dto';
 export class ClosureController {
   constructor(private readonly closureService: ClosureService) {}
 
+  @Post('closures/simulate')
+  @ApiOperation({
+    summary: 'Simulate a financial closure without persisting data',
+  })
+  simulate(@CurrentUser() userId: string, @Body() dto: CreateClosureDto) {
+    return this.closureService.simulate(userId, dto);
+  }
+
   @Post('closures')
   @ApiOperation({
     summary: 'Create a financial closure for a household period',

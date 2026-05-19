@@ -18,22 +18,26 @@ export class ClosureService {
     private readonly closureBalancesService: ClosureBalancesService,
   ) {}
 
-  private startOfDay(date: Date): Date {
-    const next = new Date(date);
-    next.setHours(0, 0, 0, 0);
-    return next;
-  }
+  private async getOpenExpensesPeriod(householdId: string) {
+    const firstOpenExpense = await this.prisma.expenses.findFirst({
+      where: {
+        householdId,
+        closureId: null,
+      },
+      orderBy: { date: 'asc' },
+      select: { date: true },
+    });
 
-  private endOfDay(date: Date): Date {
-    const next = new Date(date);
-    next.setHours(23, 59, 59, 999);
-    return next;
-  }
+    if (!firstOpenExpense) {
+      throw new BadRequestException(
+        'No open expenses available for closure in this period',
+      );
+    }
 
-  private addDays(date: Date, days: number): Date {
-    const next = new Date(date);
-    next.setDate(next.getDate() + days);
-    return next;
+    return {
+      startDate: firstOpenExpense.date,
+      endDate: new Date(),
+    };
   }
 
   private async assertHouseholdExists(householdId: string): Promise<void> {
@@ -121,27 +125,9 @@ export class ClosureService {
   async create(userId: string, dto: CreateClosureDto) {
     await this.validateAdminMembership(userId, dto.householdId);
 
-    const latestClosure = await this.prisma.closures.findFirst({
-      where: { householdId: dto.householdId },
-      orderBy: { endDate: 'desc' },
-      select: { endDate: true },
-    });
-
-    const now = new Date();
-    const endDate = this.endOfDay(now);
-
-    const firstOpenExpense = await this.prisma.expenses.findFirst({
-      where: {
-        householdId: dto.householdId,
-        closureId: null,
-      },
-      orderBy: { date: 'asc' },
-      select: { date: true },
-    });
-
-    const startDate = latestClosure
-      ? this.startOfDay(this.addDays(latestClosure.endDate, 1))
-      : this.startOfDay(firstOpenExpense?.date ?? now);
+    const { startDate, endDate } = await this.getOpenExpensesPeriod(
+      dto.householdId,
+    );
 
     const expenses = await this.prisma.expenses.findMany({
       where: {
@@ -204,6 +190,56 @@ export class ClosureService {
     return {
       closureId: result.id,
       balances,
+    };
+  }
+
+  async simulate(userId: string, dto: CreateClosureDto) {
+    await this.validateAdminMembership(userId, dto.householdId);
+
+    const { startDate, endDate } = await this.getOpenExpensesPeriod(
+      dto.householdId,
+    );
+
+    const expenses = await this.prisma.expenses.findMany({
+      where: {
+        householdId: dto.householdId,
+        closureId: null,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: { date: 'asc' },
+      select: {
+        id: true,
+        amount: true,
+        payers: {
+          select: { userId: true, amountPaid: true },
+        },
+        splits: {
+          select: { userId: true, amount: true },
+        },
+      },
+    });
+
+    if (expenses.length === 0) {
+      throw new BadRequestException(
+        'No open expenses available for closure in this period',
+      );
+    }
+
+    const settlement = this.closureBalancesService.calculateSettlement(
+      this.toExpenseInput(expenses),
+    );
+
+    return {
+      period: {
+        startDate,
+        endDate,
+      },
+      expensesCount: expenses.length,
+      balances: settlement.balances,
+      debts: settlement.debts,
     };
   }
 
