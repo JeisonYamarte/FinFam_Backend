@@ -1,25 +1,53 @@
 services:
   postgres:
-    image: postgres:13
+    image: postgres:16-alpine
     container_name: db
+    restart: unless-stopped
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${DB_PORT}:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   auth-redis:
     container_name: auth-redis
-    image: redis:7.2 # Usamos la imagen oficial de Redis
-    restart: always
+    image: redis:7.2-alpine
+    restart: unless-stopped
     volumes:
-      - redis_data:/data # Persistimos los datos de Redis
-    command: redis-server --appendonly yes # Habilitamos persistencia
+      - redis_data:/data
+    command: redis-server --appendonly yes
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    container_name: backend_finfam
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-redis:
+        condition: service_healthy
 
 volumes:
   redis_data:
