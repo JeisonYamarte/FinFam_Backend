@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import nodemailer, { Transporter, SentMessageInfo } from 'nodemailer';
+import nodemailer, { Transporter } from 'nodemailer';
 import { envs } from 'src/config/app.config';
 
 @Injectable()
@@ -16,17 +16,15 @@ export class EmailService {
     });
   }
 
-  async sendEmail(to: string, subject: string, html: string) {
-    const from = envs.EMAIL_FROM;
+  async sendEmail(to: string, subject: string, html: string): Promise<void> {
+    const from: string = envs.EMAIL_FROM;
     try {
-      const info: SentMessageInfo = await this.transporter.sendMail({
+      await this.transporter.sendMail({
         from: `"FinFam" <${from}>`,
         to,
         subject,
         html,
       });
-
-      return info;
     } catch (error) {
       console.error('Error sending email:', error);
       throw new Error('Failed to send email');

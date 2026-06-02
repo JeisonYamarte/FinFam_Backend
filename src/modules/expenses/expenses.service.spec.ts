@@ -19,10 +19,9 @@ describe('ExpensesService', () => {
           role: 'ADMIN',
           isActive: true,
         }),
-        findMany: jest.fn().mockResolvedValue([
-          { userId: 'u1' },
-          { userId: 'u2' },
-        ]),
+        findMany: jest
+          .fn()
+          .mockResolvedValue([{ userId: 'u1' }, { userId: 'u2' }]),
       },
       households: {
         findUnique: jest.fn().mockResolvedValue({ id: 'h1' }),
@@ -70,7 +69,9 @@ describe('ExpensesService', () => {
     };
 
     it('accepts valid totals and creates expense', async () => {
-      await expect(service.create('u1', baseDto)).resolves.toEqual({ id: 'e1' });
+      await expect(service.create('u1', baseDto)).resolves.toEqual({
+        id: 'e1',
+      });
       expect(prismaMock.expenses.create).toHaveBeenCalled();
     });
 

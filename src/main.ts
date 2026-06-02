@@ -47,4 +47,4 @@ async function bootstrap() {
   await app.listen(envs.PORT);
   logger.log(`Application is running on: http://localhost:${envs.PORT}`);
 }
-bootstrap();
+void bootstrap();
