@@ -1,0 +1,16 @@
+export const envs = {
+  PORT: 3000,
+  ALLOWED_ORIGINS: ['http://localhost:3000'],
+  DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+  JWT_SECRET: 'test-secret',
+  REDIS_HOST: 'localhost',
+  REDIS_PORT: 6379,
+  REDIS_TTL: 60000,
+  EMAIL_PASSWORD: 'test-email-password',
+  EMAIL_FROM: 'test@finfam.local',
+  FRONTEND_URL: 'http://localhost:5173',
+  NODE_ENV: 'development' as const,
+  CLOUDINARY_CLOUD_NAME: 'test-cloud',
+  CLOUDINARY_API_KEY: 'test-key',
+  CLOUDINARY_API_SECRET: 'test-secret',
+};

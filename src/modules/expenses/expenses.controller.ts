@@ -13,7 +13,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -56,7 +61,123 @@ export class ExpensesController {
 
   // GET /households/:householdId/expenses/calculation
   @Get('households/:householdId/expenses/calculation')
-  @ApiOperation({ summary: 'Get expenses for balance calculation engine' })
+  @ApiOperation({
+    summary: 'Get open-period totals for household balance calculation',
+  })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        period: {
+          type: 'object',
+          properties: {
+            startDate: {
+              type: 'string',
+              nullable: true,
+              description: 'Open period start date in YYYY-MM-DD format',
+              example: '2026-05-01',
+            },
+            endDate: {
+              type: 'string',
+              nullable: true,
+              description: 'Null while the period is open',
+              example: null,
+            },
+          },
+          required: ['startDate', 'endDate'],
+        },
+        openExpensesCount: {
+          type: 'number',
+          description: 'Number of open expenses in the current period',
+          example: 7,
+        },
+        totalSpentOpenPeriod: {
+          type: 'number',
+          description: 'Total spent across all open expenses in the period',
+          example: 240500,
+        },
+        totalsByUser: {
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            properties: {
+              paid: {
+                type: 'number',
+                example: 15000,
+              },
+              split: {
+                type: 'number',
+                example: 36250,
+              },
+              net: {
+                type: 'number',
+                example: -21250,
+              },
+            },
+            required: ['paid', 'split', 'net'],
+          },
+          example: {
+            '350329d7-7dff-43eb-a184-4d1cbb39cbc2': {
+              paid: 15000,
+              split: 36250,
+              net: -21250,
+            },
+            '5a9a0fde-7262-4b9b-bf66-6a1ca445a6fd': {
+              paid: 8000,
+              split: 48916.68,
+              net: -40916.68,
+            },
+            '9775d1c9-3185-40c3-8ee2-1d05a28017a5': {
+              paid: 150000,
+              split: 33916.66,
+              net: 116083.34,
+            },
+            'e549b06f-6053-497c-8b9d-9d08da0ba5d8': {
+              paid: 67500,
+              split: 121416.66,
+              net: -53916.66,
+            },
+          },
+        },
+      },
+      required: [
+        'period',
+        'openExpensesCount',
+        'totalSpentOpenPeriod',
+        'totalsByUser',
+      ],
+      example: {
+        period: {
+          startDate: '2026-05-01',
+          endDate: null,
+        },
+        openExpensesCount: 7,
+        totalSpentOpenPeriod: 240500,
+        totalsByUser: {
+          '350329d7-7dff-43eb-a184-4d1cbb39cbc2': {
+            paid: 15000,
+            split: 36250,
+            net: -21250,
+          },
+          '5a9a0fde-7262-4b9b-bf66-6a1ca445a6fd': {
+            paid: 8000,
+            split: 48916.68,
+            net: -40916.68,
+          },
+          '9775d1c9-3185-40c3-8ee2-1d05a28017a5': {
+            paid: 150000,
+            split: 33916.66,
+            net: 116083.34,
+          },
+          'e549b06f-6053-497c-8b9d-9d08da0ba5d8': {
+            paid: 67500,
+            split: 121416.66,
+            net: -53916.66,
+          },
+        },
+      },
+    },
+  })
   getForCalculation(
     @CurrentUser() userId: string,
     @Param('householdId') householdId: string,

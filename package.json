@@ -8,16 +8,21 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "type-check": "tsc --noEmit",
     "test": "jest",
+    "test:ci": "jest --runInBand --coverage",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e:ci": "jest --config ./test/jest-e2e.json --runInBand"
   },
   "dependencies": {
     "@keyv/redis": "^5.1.6",
@@ -104,6 +109,14 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "moduleNameMapper": {
+      "^src/generated/prisma/client$": "<rootDir>/test-utils/prisma-client.mock.ts",
+      "^src/modules/prisma/prisma.service$": "<rootDir>/test-utils/prisma.service.mock.ts",
+      "^src/modules/cloudinary/cloudinary.service$": "<rootDir>/test-utils/cloudinary.service.mock.ts",
+      "^src/config/app.config$": "<rootDir>/test-utils/app.config.mock.ts",
+      "^uuid$": "<rootDir>/test-utils/uuid.mock.ts",
+      "^src/(.*)$": "<rootDir>/$1"
+    },
     "transform": {
       "^.+\\.(t|j)s$": ["ts-jest", {
         "tsconfig": "tsconfig.test.json"

@@ -69,10 +69,9 @@ export class EmailService {
     const subject = 'You have been invited to a FinFam household';
     const html = `
       <p>You have been invited to join a household on FinFam.</p>
-      <p>Click the link below to accept or decline the invitation:</p>
-      <a href="${envs.FRONTEND_URL}/invitations/${invitationId}/accept">Accept Invitation</a>
+      <p>Click the link the invitation:</p>
+      <a href="${envs.FRONTEND_URL}/invitations/${invitationId}">Invitation</a>
       <br/>
-      <a href="${envs.FRONTEND_URL}/invitations/${invitationId}/decline">Decline Invitation</a>
       <p>This invitation will expire in 24 hours.</p>
     `;
 

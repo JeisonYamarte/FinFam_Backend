@@ -30,6 +30,14 @@ export class ExpensesService {
     return Math.round(value * 100);
   }
 
+  private fromCents(cents: number): number {
+    return Math.round(cents) / 100;
+  }
+
+  private formatDateOnly(date: Date): string {
+    return date.toISOString().slice(0, 10);
+  }
+
   private validateFinancialIntegrity(
     amount: number,
     payers: PayerDto[],
@@ -215,7 +223,7 @@ export class ExpensesService {
     const [expenses, total] = await Promise.all([
       this.prisma.expenses.findMany({
         where,
-        orderBy: { date: 'desc' },
+        orderBy: [{ date: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
         skip,
         take: limit,
         select: {
@@ -484,20 +492,94 @@ export class ExpensesService {
   async getForCalculation(userId: string, householdId: string) {
     await this.validateMembership(userId, householdId);
 
-    const expenses = await this.prisma.expenses.findMany({
-      where: { householdId },
-      select: {
-        id: true,
-        amount: true,
-        payers: {
-          select: { userId: true, amountPaid: true },
+    const [memberships, expenses] = await Promise.all([
+      this.prisma.memberships.findMany({
+        where: {
+          householdId,
+          isActive: true,
         },
-        splits: {
-          select: { userId: true, amount: true },
+        select: { userId: true },
+      }),
+      this.prisma.expenses.findMany({
+        where: {
+          householdId,
+          closureId: null,
         },
-      },
-    });
+        orderBy: { date: 'asc' },
+        select: {
+          id: true,
+          amount: true,
+          date: true,
+          payers: {
+            select: { userId: true, amountPaid: true },
+          },
+          splits: {
+            select: { userId: true, amount: true },
+          },
+        },
+      }),
+    ]);
 
-    return expenses;
+    const totalsByUserCents = new Map<
+      string,
+      { paid: number; split: number }
+    >();
+
+    for (const membership of memberships) {
+      totalsByUserCents.set(membership.userId, { paid: 0, split: 0 });
+    }
+
+    let totalSpentOpenPeriodCents = 0;
+
+    for (const expense of expenses) {
+      totalSpentOpenPeriodCents += this.roundCents(Number(expense.amount));
+
+      for (const payer of expense.payers) {
+        const current = totalsByUserCents.get(payer.userId) ?? {
+          paid: 0,
+          split: 0,
+        };
+        current.paid += this.roundCents(Number(payer.amountPaid));
+        totalsByUserCents.set(payer.userId, current);
+      }
+
+      for (const split of expense.splits) {
+        const current = totalsByUserCents.get(split.userId) ?? {
+          paid: 0,
+          split: 0,
+        };
+        current.split += this.roundCents(Number(split.amount));
+        totalsByUserCents.set(split.userId, current);
+      }
+    }
+
+    const totalsByUser = Object.fromEntries(
+      Array.from(totalsByUserCents.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([memberUserId, totals]) => {
+          const paid = this.fromCents(totals.paid);
+          const split = this.fromCents(totals.split);
+
+          return [
+            memberUserId,
+            {
+              paid,
+              split,
+              net: this.fromCents(totals.paid - totals.split),
+            },
+          ];
+        }),
+    );
+
+    return {
+      period: {
+        startDate:
+          expenses.length > 0 ? this.formatDateOnly(expenses[0].date) : null,
+        endDate: null,
+      },
+      openExpensesCount: expenses.length,
+      totalSpentOpenPeriod: this.fromCents(totalSpentOpenPeriodCents),
+      totalsByUser,
+    };
   }
 }
