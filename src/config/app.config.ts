@@ -10,8 +10,13 @@ export const envSchema = z
       .transform((val) => val.split(',').map((origin) => origin.trim())),
     DATABASE_URL: z.string().min(1, 'DATABASE_URL is required.'),
     JWT_SECRET: z.string().min(1, 'JWT_SECRET is required.'),
-    REDIS_HOST: z.string().min(1, 'REDIS_HOST is required.'),
-    REDIS_PORT: z.string().min(1, 'REDIS_PORT is required.').transform(Number),
+    REDIS_URL: z.string().url('REDIS_URL must be a valid URL.').optional(),
+    REDIS_HOST: z.string().min(1, 'REDIS_HOST is required.').optional(),
+    REDIS_PORT: z
+      .string()
+      .min(1, 'REDIS_PORT is required.')
+      .transform(Number)
+      .optional(),
     REDIS_TTL: z.string().min(1, 'REDIS_TTL is required.').transform(Number),
     EMAIL_PASSWORD: z.string().min(1, 'EMAIL_PASSWORD is required.'),
     EMAIL_FROM: z.string().min(1, 'EMAIL_FROM is required.'),
@@ -26,6 +31,19 @@ export const envSchema = z
     CLOUDINARY_API_SECRET: z
       .string()
       .min(1, 'CLOUDINARY_API_SECRET is required.'),
+  })
+  .superRefine((data, ctx) => {
+    const hasRedisUrl = !!data.REDIS_URL;
+    const hasHostAndPort = !!data.REDIS_HOST && data.REDIS_PORT !== undefined;
+
+    if (!hasRedisUrl && !hasHostAndPort) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'Provide REDIS_URL or both REDIS_HOST and REDIS_PORT environment variables.',
+        path: ['REDIS_URL'],
+      });
+    }
   })
   .passthrough();
 
@@ -43,6 +61,7 @@ export const envs: envType = {
   ALLOWED_ORIGINS: envParsed.data.ALLOWED_ORIGINS,
   DATABASE_URL: envParsed.data.DATABASE_URL,
   JWT_SECRET: envParsed.data.JWT_SECRET,
+  REDIS_URL: envParsed.data.REDIS_URL,
   REDIS_HOST: envParsed.data.REDIS_HOST,
   REDIS_PORT: envParsed.data.REDIS_PORT,
   REDIS_TTL: envParsed.data.REDIS_TTL,

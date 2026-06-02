@@ -22,10 +22,11 @@ import KeyvRedis from '@keyv/redis';
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: () => {
+        const redisConnectionString =
+          envs.REDIS_URL ?? `redis://${envs.REDIS_HOST}:${envs.REDIS_PORT}`;
+
         return {
-          stores: [
-            new KeyvRedis(`redis://${envs.REDIS_HOST}:${envs.REDIS_PORT}`),
-          ],
+          stores: [new KeyvRedis(redisConnectionString)],
         };
       },
     }),
