@@ -38,6 +38,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy?schema=public
+
       - name: Lint
         run: pnpm lint:check
 
@@ -71,6 +76,8 @@ jobs:
 
       - name: Generate Prisma client
         run: pnpm prisma generate
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy?schema=public
 
       - name: Build app
         run: pnpm build
