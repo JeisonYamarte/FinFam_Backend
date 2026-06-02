@@ -109,6 +109,7 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "testPathIgnorePatterns": ["/node_modules/", "/test/"],
     "moduleNameMapper": {
       "^src/generated/prisma/client$": "<rootDir>/test-utils/prisma-client.mock.ts",
       "^src/modules/prisma/prisma.service$": "<rootDir>/test-utils/prisma.service.mock.ts",
