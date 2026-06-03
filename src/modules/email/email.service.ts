@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import nodemailer, { Transporter } from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { envs } from 'src/config/app.config';
 
 @Injectable()
 export class EmailService {
-  private transporter: Transporter;
+  private transporter: Transporter<SMTPTransport.SentMessageInfo>;
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      family: 4,
       auth: {
         user: envs.EMAIL_FROM,
         pass: envs.EMAIL_PASSWORD,
       },
-    });
+    } as SMTPTransport.Options & { family: number });
   }
 
   async sendEmail(to: string, subject: string, html: string): Promise<void> {
