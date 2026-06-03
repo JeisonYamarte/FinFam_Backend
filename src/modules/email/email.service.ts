@@ -1,41 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import nodemailer, { Transporter } from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { envs } from 'src/config/app.config';
+import { EmailProviderInterface } from './interfaces/email-provider.interface';
+import { BrevoProvider } from './providers/brevo.provider';
+import { LegacyGmailProvider } from './providers/legacy-gmail.provider';
 
 @Injectable()
 export class EmailService {
-  private transporter: Transporter<SMTPTransport.SentMessageInfo>;
+  private readonly provider: EmailProviderInterface;
 
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      family: 4,
-      connectionTimeout: 8000,
-      greetingTimeout: 8000,
-      socketTimeout: 12000,
-      auth: {
-        user: envs.EMAIL_FROM,
-        pass: envs.EMAIL_PASSWORD,
-      },
-    } as SMTPTransport.Options & { family: number });
+  constructor(
+    private readonly brevoProvider: BrevoProvider,
+    private readonly legacyGmailProvider: LegacyGmailProvider,
+  ) {
+    this.provider =
+      envs.EMAIL_PROVIDER === 'gmail'
+        ? this.legacyGmailProvider
+        : this.brevoProvider;
   }
 
   async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    const from: string = envs.EMAIL_FROM;
-    try {
-      await this.transporter.sendMail({
-        from: `"FinFam" <${from}>`,
-        to,
-        subject,
-        html,
-      });
-    } catch (error) {
-      console.error('Error sending email:', error);
-      throw new Error('Failed to send email');
-    }
+    await this.provider.sendEmail(to, subject, html);
   }
 
   async sendVerificationEmail(to: string, uuid: string) {

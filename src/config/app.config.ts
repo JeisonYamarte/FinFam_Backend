@@ -18,8 +18,10 @@ export const envSchema = z
       .transform(Number)
       .optional(),
     REDIS_TTL: z.string().min(1, 'REDIS_TTL is required.').transform(Number),
-    EMAIL_PASSWORD: z.string().min(1, 'EMAIL_PASSWORD is required.'),
+    EMAIL_PASSWORD: z.string().optional(),
     EMAIL_FROM: z.string().min(1, 'EMAIL_FROM is required.'),
+    EMAIL_PROVIDER: z.enum(['brevo', 'gmail']).default('brevo'),
+    BREVO_KEY_API: z.string().min(1, 'BREVO_KEY_API is required.'),
     FRONTEND_URL: z.string().min(1, 'FRONTEND_URL is required.'),
     NODE_ENV: z.enum(['development', 'production']).default('development'),
 
@@ -42,6 +44,22 @@ export const envSchema = z
         message:
           'Provide REDIS_URL or both REDIS_HOST and REDIS_PORT environment variables.',
         path: ['REDIS_URL'],
+      });
+    }
+
+    if (data.EMAIL_PROVIDER === 'gmail' && !data.EMAIL_PASSWORD) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'EMAIL_PASSWORD is required when EMAIL_PROVIDER=gmail.',
+        path: ['EMAIL_PASSWORD'],
+      });
+    }
+
+    if (data.EMAIL_PROVIDER === 'brevo' && !data.BREVO_KEY_API) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'BREVO_KEY_API is required when EMAIL_PROVIDER=brevo.',
+        path: ['BREVO_KEY_API'],
       });
     }
   })
@@ -67,6 +85,8 @@ export const envs: envType = {
   REDIS_TTL: envParsed.data.REDIS_TTL,
   EMAIL_PASSWORD: envParsed.data.EMAIL_PASSWORD,
   EMAIL_FROM: envParsed.data.EMAIL_FROM,
+  EMAIL_PROVIDER: envParsed.data.EMAIL_PROVIDER,
+  BREVO_KEY_API: envParsed.data.BREVO_KEY_API,
   FRONTEND_URL: envParsed.data.FRONTEND_URL,
   NODE_ENV: envParsed.data.NODE_ENV,
   CLOUDINARY_CLOUD_NAME: envParsed.data.CLOUDINARY_CLOUD_NAME,

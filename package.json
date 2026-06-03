@@ -25,6 +25,7 @@
     "test:e2e:ci": "jest --config ./test/jest-e2e.json --runInBand"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
     "@keyv/redis": "^5.1.6",
     "@nestjs/cache-manager": "^3.1.0",
     "@nestjs/common": "^11.0.1",
@@ -108,7 +109,10 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
-    "testPathIgnorePatterns": ["/node_modules/", "/test/"],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ],
     "moduleNameMapper": {
       "^src/generated/prisma/client$": "<rootDir>/test-utils/prisma-client.mock.ts",
       "^src/modules/prisma/prisma.service$": "<rootDir>/test-utils/prisma.service.mock.ts",
@@ -118,9 +122,12 @@
       "^src/(.*)$": "<rootDir>/$1"
     },
     "transform": {
-      "^.+\\.(t|j)s$": ["ts-jest", {
-        "tsconfig": "tsconfig.test.json"
-      }]
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.test.json"
+        }
+      ]
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
