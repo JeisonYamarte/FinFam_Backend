@@ -64,13 +64,12 @@ export class AuthService {
     const ttl = 60 * 60 * 24 * 7 * 1000; // 7 días en milisegundos
     await this.cacheManager.set(uuid, user.id, ttl); // Cache for 7 days
 
-    try {
-      await this.emailService.sendVerificationEmail(user.email, uuid);
-    } catch {
+    this.emailService.sendVerificationEmail(user.email, uuid).catch((err) => {
       console.warn(
-        'Verification email could not be sent, but account was created successfully.',
+        'Verification email could not be sent, but account was created successfully:',
+        err,
       );
-    }
+    });
     const refresh_token = await this.createSession(user.id, ip, userAgent);
     return { user, refresh_token };
   }

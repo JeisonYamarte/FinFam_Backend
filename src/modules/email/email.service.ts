@@ -13,6 +13,9 @@ export class EmailService {
       port: 587,
       secure: false,
       family: 4,
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 12000,
       auth: {
         user: envs.EMAIL_FROM,
         pass: envs.EMAIL_PASSWORD,

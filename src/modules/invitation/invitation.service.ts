@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { v4 as uuidv4 } from 'uuid';
@@ -69,9 +70,15 @@ export class InvitationService {
       INVITATION_TTL_MS,
     );
 
-    this.emailService.sendInvitationEmail(email, invitationId).catch((err) => {
-      console.warn('Invitation email could not be sent:', err);
-    });
+    try {
+      await this.emailService.sendInvitationEmail(email, invitationId);
+    } catch (error) {
+      await this._cleanupInvitation(invitationId, payload);
+      console.error('Invitation email could not be sent:', error);
+      throw new ServiceUnavailableException(
+        'Invitation could not be sent. Please try again.',
+      );
+    }
 
     return { message: 'Invitation sent successfully' };
   }
