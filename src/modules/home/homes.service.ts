@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { Memberships, Role } from 'src/generated/prisma/client';
@@ -15,6 +16,8 @@ import { CreateInvitationDto } from 'src/modules/invitation/dto/create-invitatio
 
 @Injectable()
 export class HomesService {
+  private readonly logger = new Logger(HomesService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly memberService: MemberService,
@@ -212,7 +215,15 @@ export class HomesService {
     invitedByUserId: string,
     dto: CreateInvitationDto,
   ) {
-    return this.invitationService.create(homeId, invitedByUserId, dto);
+    try {
+      return await this.invitationService.create(homeId, invitedByUserId, dto);
+    } catch (error) {
+      this.logger.error(
+        `Invite flow failed for home ${homeId} and email ${dto.email}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw error;
+    }
   }
 
   // ─── PRIVATE HELPERS ─────────────────────────────────────────────────────────

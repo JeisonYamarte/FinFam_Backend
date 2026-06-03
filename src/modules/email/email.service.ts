@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { envs } from 'src/config/app.config';
 import { EmailProviderInterface } from './interfaces/email-provider.interface';
 import { BrevoProvider } from './providers/brevo.provider';
@@ -6,6 +6,7 @@ import { LegacyGmailProvider } from './providers/legacy-gmail.provider';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   private readonly provider: EmailProviderInterface;
 
   constructor(
@@ -19,7 +20,24 @@ export class EmailService {
   }
 
   async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    await this.provider.sendEmail(to, subject, html);
+    try {
+      await this.provider.sendEmail(to, subject, html);
+    } catch (error) {
+      const providerName = envs.EMAIL_PROVIDER;
+      if (providerName === 'brevo') {
+        this.logger.error(
+          `Brevo email service failed while sending email to ${to}`,
+          error instanceof Error ? error.stack : String(error),
+        );
+      } else {
+        this.logger.error(
+          `Email service (${providerName}) failed while sending email to ${to}`,
+          error instanceof Error ? error.stack : String(error),
+        );
+      }
+
+      throw error;
+    }
   }
 
   async sendVerificationEmail(to: string, uuid: string) {

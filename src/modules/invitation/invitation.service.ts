@@ -2,11 +2,13 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { v4 as uuidv4 } from 'uuid';
+import { envs } from 'src/config/app.config';
 
 import { EmailService } from 'src/modules/email/email.service';
 import { MemberService } from 'src/modules/member/member.service';
@@ -27,6 +29,8 @@ interface InvitationPayload {
 
 @Injectable()
 export class InvitationService {
+  private readonly logger = new Logger(InvitationService.name);
+
   constructor(
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly emailService: EmailService,
@@ -74,7 +78,19 @@ export class InvitationService {
       await this.emailService.sendInvitationEmail(email, invitationId);
     } catch (error) {
       await this._cleanupInvitation(invitationId, payload);
-      console.error('Invitation email could not be sent:', error);
+
+      const providerName = envs.EMAIL_PROVIDER;
+      this.logger.error(
+        `Invitation email could not be sent using provider ${providerName}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+
+      if (providerName === 'brevo') {
+        throw new ServiceUnavailableException(
+          'Brevo email service is unavailable. Invitation could not be sent. Please try again.',
+        );
+      }
+
       throw new ServiceUnavailableException(
         'Invitation could not be sent. Please try again.',
       );
