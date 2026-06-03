@@ -41,13 +41,7 @@ export class EmailService {
       <p>Thank you for registering! Please verify your email address by clicking the link below:</p>
       <a href="${envs.FRONTEND_URL}/verify-email?token=${uuid}">Verify Email</a>
     `;
-
-    try {
-      await this.sendEmail(to, subject, html);
-    } catch (error) {
-      console.error('Error sending verification email:', error);
-      throw new Error('Failed to send verification email');
-    }
+    await this.sendEmail(to, subject, html);
   }
 
   async sendPasswordResetEmail(to: string, uuid: string) {
@@ -58,13 +52,7 @@ export class EmailService {
       <p>This link will expire in 15 minutes.</p>
       <p>If you did not request this, please ignore this email.</p>
     `;
-
-    try {
-      await this.sendEmail(to, subject, html);
-    } catch (error) {
-      console.error('Error sending password reset email:', error);
-      throw new Error('Failed to send password reset email');
-    }
+    await this.sendEmail(to, subject, html);
   }
 
   async sendInvitationEmail(to: string, invitationId: string) {
@@ -76,12 +64,6 @@ export class EmailService {
       <br/>
       <p>This invitation will expire in 24 hours.</p>
     `;
-
-    try {
-      await this.sendEmail(to, subject, html);
-    } catch (error) {
-      console.error('Error sending invitation email:', error);
-      throw new Error('Failed to send invitation email');
-    }
+    await this.sendEmail(to, subject, html);
   }
 }

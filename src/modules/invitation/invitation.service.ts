@@ -69,7 +69,9 @@ export class InvitationService {
       INVITATION_TTL_MS,
     );
 
-    await this.emailService.sendInvitationEmail(email, invitationId);
+    this.emailService.sendInvitationEmail(email, invitationId).catch((err) => {
+      console.warn('Invitation email could not be sent:', err);
+    });
 
     return { message: 'Invitation sent successfully' };
   }

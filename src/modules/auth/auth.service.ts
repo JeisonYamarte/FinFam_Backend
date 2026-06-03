@@ -126,7 +126,9 @@ export class AuthService {
     const uuid = uuidv4();
     const ttl = 60 * 15 * 1000; // 15 minutos en milisegundos
     await this.cacheManager.set(`reset:${uuid}`, user.id, ttl);
-    await this.emailService.sendPasswordResetEmail(user.email, uuid);
+    this.emailService.sendPasswordResetEmail(user.email, uuid).catch((err) => {
+      console.warn('Password reset email could not be sent:', err);
+    });
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
